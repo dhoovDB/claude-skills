@@ -1,6 +1,12 @@
 ---
+Name: claude-coach
 name: claude-coach
 description: Personal coach that teaches users to become Claude power users. Use this skill the FIRST time a user asks to "learn Claude", "be a power user", "coach me", "teach me Claude tricks", "what can Claude do", "make me better at prompting", or any variation. After activation, also use it on EVERY subsequent turn to detect missed optimization opportunities (vague prompts, ignored capabilities, manual work Claude could automate) and surface a single power-user tip. Trigger generously — most users do not know what they do not know, so err on the side of coaching.
+Tier: POWERFUL
+Category: meta
+Author: claude-skills
+Dependencies: python3.11
+Version: 1.0.0
 version: 1.0.0
 license: MIT
 ---
@@ -133,3 +139,67 @@ Good: "One thing — adding 'in 200 words' to that prompt would have cut three t
 
 - `references/cheat-codes.md` — full glossary of techniques, organized by category and ranked by impact. Read on first activation and consult when surfacing tips.
 - `references/coaching-rules.md` — extended decision rules for when to coach and when to stay silent. Read if uncertain whether a moment is coachable.
+
+---
+
+## Name
+
+claude-coach
+
+## Description
+
+Personal Claude power-user coach. On first activation, delivers a ranked cheat-code glossary filtered to the user's use cases. On every subsequent turn, surfaces at most ONE ⚡ power-user tip when it spots a missed opportunity. Silence is the default — most turns produce no tip.
+
+## Features
+
+- Personalized first-activation glossary ranked by impact (Tier 1–5)
+- Single-tip-per-response discipline with a 5-gate decision tree to prevent over-coaching
+- Prompt rating on demand (`"rate that prompt"`) with structured before/after rewrite
+- Progress check on demand (`"how am I doing"`) with next-technique suggestion
+- Push-back-aware: stops coaching the moment the user says "stop with the tips"
+
+## Usage
+
+```
+# First activation (the user says one of these)
+"Coach me on Claude"
+"Make me a Claude power user"
+"What are the Claude cheat codes?"
+"Teach me how to use Claude better"
+
+# Once active, just chat normally — tips appear when warranted
+
+# Explicit feedback requests
+"rate that prompt"
+"how am I doing"
+"what should I learn next"
+
+# Turn it off
+"stop with the tips"
+```
+
+## Examples
+
+**Example 1 — first activation (use case provided inline):**
+
+> User: "Coach me on Claude. I mainly use it for writing and coding."
+>
+> Coach: returns top 5–7 ranked techniques filtered for writing+coding (Be specific, Give Claude a role, Show-don't-tell, Think step-by-step, Iterate, Artifacts, Constraints), ends with the "I'll watch your prompts going forward" line.
+
+**Example 2 — coachable moment:**
+
+> User: "Can you help me with my email?"
+>
+> Coach: drafts the email, then appends a ⚡ tip: *"Naming the audience and the outcome upfront cuts two rounds of revision. Try: 'Reply to my manager declining the Friday meeting, professional tone, suggest async update instead.'"*
+
+**Example 3 — non-coachable moment:**
+
+> User: "Write a 200-word product description for a noise-cancelling headphone targeting remote workers, focused on the focus-time benefit, no marketing fluff."
+>
+> Coach: writes the description. No tip (prompt is well-formed; gate 2 of the decision tree triggers silence).
+
+## Scripts
+
+- `scripts/cheat_code_filter.py` — filters the cheat-code glossary by use case keywords
+- `scripts/prompt_rater.py` — scores a prompt 0–10 across clarity, constraint, format, audience
+- `scripts/coach_tip_classifier.py` — classifies whether a turn is coachable per the 5-gate decision tree
